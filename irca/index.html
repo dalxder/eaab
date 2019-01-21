@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>IRCA</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <!-- Angular Material Library -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons"/>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.css"/>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/fagnersilvamartins/angular-material-collapsible/8426264b/dist/css/collapsible.min.css" />        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.10/md-data-table.min.css" integrity="sha256-7BlE1mNKbk+QTDcmrBGItRe3Dt7mJr+QNJzTrwDEt/E=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="css/irca.css"/>
+        </head>
+        <body ng-app="myApp" >
+            <div ng-cloak ng-controller="inputController" layout="column"> 
+
+                <div style="visibility: hidden;">
+                    <div class="md-dialog-container" id="myDialog">
+                        <md-dialog layout-padding>
+                            <h2>Estamos procesando los datos</h2>
+
+                            <div layout="row" layout-sm="column" layout-align="space-around">
+                                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                                <p>{{fileName.size}}</p>
+                                <p>{{fileName.name}}</p>
+                            </div>
+
+                        </md-dialog>
+                    </div>
+                </div>
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">IRCA. Índice de Calidad de Agua  <br/>Resolución 2115 de 2007</div>
+                    </div>
+                </md-toolbar>
+                <md-content layout-padding layout="row" layout-align="start end">
+                    <input-file></input-file>
+                </md-content>
+            </div>
+            <div ng-show="mostrarTabla">
+
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">Tabla de datos Avisos IRCA</div>
+                    </div>
+                </md-toolbar>
+
+                <md-content layout="column" flex ng-controller="tablaController">
+
+                    <md-card>
+                        <section layout="row" layout-sm="column" layout-align="start center" layout-padding layout-margin layout-fill layout-wrap> 
+                            <md-input-container>
+                                <label>Buscar datos</label>
+                                <input ng-model="searchKeyword"/>
+                            </md-input-container>
+                            <md-button md-no-ink ng-click="saveData()" class="md-primary" aria-label="attach_file" >Guardar datos</md-button>
+                        </section>
+                    </md-card>
+                    <md-card>
+                        <div ng-include="'htm/tabla.htm'"></div>
+                    </md-card>
+                </md-content>
+            </div>
+
+            <!-- Excel-->
+            <script type='text/javascript' src="https://unpkg.com/xlsx@0.14.0/dist/xlsx.full.min.js"></script>
+            <!-- Angular Material requires Angular.js Libraries md-theme="docs-dark"-->
+            <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+
+            <!-- Angular Material Library -->
+            <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.js"></script>
+            <script src="https://cdn.rawgit.com/fagnersilvamartins/angular-material-collapsible/8426264b/dist/js/collapsible.min.js"></script>
+            <script src="https://cdn.rawgit.com/fagnersilvamartins/angular-material-collapsible/8426264b/dist/js/collapsibleDirective.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.10/md-data-table.min.js" integrity="sha256-qLpj3mWjwWn2Q4NHxBClIiNUKKfaYPdq3yuXpPwwd1s=" crossorigin="anonymous"></script>
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+            <script src="js/app.js"></script>
+            <script src="js/directives.js"></script>
+            <script src="js/controller/inputController.js"></script>
+            <script src="js/controller/tablaController.js"></script>
+            <script src="js/services/serv_fileReader.js"></script>
+
+            <script src="https://tympanix.github.io/angular-table-resize/angular-table-resize.js"></script>
+
+        </body>
+    </html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Web Application Pérdidas</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="x-ua-compatible" content="IE=edge">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.7/c3.min.css" /> 
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
+
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons"/>
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.css"/>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/fagnersilvamartins/angular-material-collapsible/8426264b/dist/css/collapsible.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.10/md-data-table.min.css" integrity="sha256-7BlE1mNKbk+QTDcmrBGItRe3Dt7mJr+QNJzTrwDEt/E=" crossorigin="anonymous" />
+        <style>
+            table td {
+                white-space: nowrap;
+            }
+            table th {
+                position: relative;
+                text-align: left;
+                cursor: pointer;
+                -moz-user-select: none;
+                -moz-user-select: none;
+                -o-user-select: none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+            .c3-ygrid-line line{
+                stroke: red;
+            }
+            footer {
+                background-color: #ccc;
+            }
+            .chart{
+                height: 250px; 
+                max-height: 300px; 
+                position: relative;
+
+            }
+        </style>
+    </head>
+    <body ng-app="myApp">
+        <header>
+            <md-toolbar md-scroll-shrink>
+                <div layout="row" layout-align="center center" flex>
+                    <img src="https://www.acueducto.com.co/wps/contenthandler/dav/fs-type1/themes/EABGeneralTheme/css/images/eab/banner/banner_Principal_HOME.jpeg" alt="EAAB" style=" height:110px; width:100%"/>
+                </div>
+            </md-toolbar>
+        </header>
+
+        <!--
+        -->
+        <div ng-cloak class="ng-cloak md-padding" ng-controller="inputCtrl" layout="column">
+            <md-card>
+                <md-card-header>
+                    <md-card-header-text>
+                        <span class="md-title">CALCULO DE PÉRDIDAS TECNICAS PARA REDES DE DISTRIBUCIÓN</span>
+                        <span class="md-subhead">Pérdidas reales físicas</span>
+                    </md-card-header-text>
+                </md-card-header>
+                <!--
+                                <md-card-title>
+                                    <md-card-title-text>
+                                        <span class="md-headline">Card headline</span>
+                                        <span class="md-subhead">Card subheader</span>
+                                    </md-card-title-text>
+                                </md-card-title>-->
+
+                <md-card-content>
+                    <form  novalidate name="myForm" role="form" class="form-horizontal">
+                        <input-files></input-files>
+                        <input-Refs></input-Refs>
+                        <div layout-gt-sm="row">
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Coeficiente de descarga (cd)</label>
+                                <input ng-model="p.cd" required />
+                            </md-input-container>
+
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Presión Mínima (MCA)</label>
+                                <input ng-model="p.pm" required />
+                            </md-input-container>
+                            <span class="flex"></span>
+
+                            <span class="flex"></span>
+                        </div>
+                    </form>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="start center">
+                    <md-button type="submit" ng-disabled="myForm.$invalid" ng-click="procesar($event)">Procesar</md-button>
+                    <md-button type="button" ng-click="ctrl.reset()" class="btn btn-warning btn-sm" ng-disabled="myForm.$pristine">Limpiar</md-button>
+                </md-card-actions>
+            </md-card>
+
+            <div style="visibility: hidden;">
+                <div class="md-dialog-container" id="myDialog">
+                    <md-dialog layout-padding>
+                        <h2>Estamos procesando los datos</h2>
+
+                        <div layout="row" layout-sm="column" layout-align="space-around">
+                            <!--<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                            <p>{{fileName.size}}</p>
+                            <p>{{fileName.name}}</p>-->
+                            <img style="margin: auto; max-width: 100%;" alt="EAAB" src="https://www.acueducto.com.co/wps/wcm/connect/EAB/2da3cf9b-5225-4e60-b943-99a3115fa450/EmpresaCOCorto.gif?MOD=AJPERES&ContentCache=NONE&CACHE=NONE&CACHEID=ROOTWORKSPACE.Z18_K862HG82N05DE0Q0RH4FGC0000-2da3cf9b-5225-4e60-b943-99a3115fa450-mjThirh">
+                        </div>
+
+                    </md-dialog>
+                </div>
+            </div>
+        </div>
+        <div  ng-show="mostrar">
+            <div ng-cloak class="ng-cloak md-padding" ng-controller="tablaCtrl" layout="column" >
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">Tabla de datos Avisos para el cálculo de las Perdidas
+                            reales físicas</div>
+                    </div>
+                </md-toolbar>
+                <md-card>
+                    <section layout="row" layout-sm="column" layout-align="start center" layout-padding layout-margin layout-fill layout-wrap> 
+                        <md-input-container>
+                            <label>Buscar datos</label>
+                            <input ng-model="buscar"/>
+                        </md-input-container>
+                        <md-button md-no-ink ng-click="saveData()" class="md-primary" aria-label="attach_file" >Guardar datos</md-button>
+                        
+                        <fieldset class="standard" flex>
+                            <legend>
+                                <md-button md-no-ink ng-click="saveReport()" class="md-primary" aria-label="attach_file" >Guardar Reportes</md-button>
+                            </legend>
+                            <div layout="row" layout-wrap flex>
+                                <div flex="30" ng-repeat="item in itemsExp">
+                                    <md-checkbox ng-checked="exists(item, selected)" ng-click="toggle(item, selected)">
+                                        {{ item}}
+                                    </md-checkbox>
+                                </div>
+                                
+                            </div>
+                        </fieldset>
+                    </section>
+                </md-card>
+                <md-table-container>
+                    <table md-table ng-model="selected" md-progress="promise" >
+                        <thead ng-if="!options.decapitate" md-head md-order="query.order"  md-on-reorder="logOrder"><!--  -->
+                            <tr md-row>
+                                <th ng-repeat="(kh, vh) in labels" rz-col="{{kh}}" md-column md-order-by="{{kh}}" > <span >{{vh}}</span></th>
+                            </tr>
+                        </thead>
+                        <tbody md-body>
+                            <tr md-row ng-click="logItem(dr)" ng-repeat="(kr, dr) in fil = (json | filter: buscar | orderBy: query.order | limitTo: query.limit : (query.page - 1) * query.limit)">
+                                <td md-cell ng-repeat="(kd, vd) in dr">{{vd}}</td>                          
+                            </tr>
+                        </tbody>
+                    </table>
+                </md-table-container>
+                <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{(json|filter:buscar).length}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination">
+                </md-table-pagination>
+
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">Acometidas Volumen de perdida calculado {{acac.v|number:1}} m^3</div>
+                    </div>
+                </md-toolbar>
+                <md-card>
+                    <md-grid-list
+                        md-cols-xs="1" md-cols-sm="2" md-cols-md="2" md-cols-gt-md="2"
+                        md-row-height-gt-md="1:1" md-row-height="2:2"
+                        md-gutter="12px" md-gutter-gt-sm="8px" >
+
+                        <md-grid-tile>
+                            <md-grid-tile-header>
+                                <h3>Cantidad de avisos</h3>
+                            </md-grid-tile-header>
+                            <div id="chCAcac" class="chart" ></div>
+                        </md-grid-tile>
+                        <md-grid-tile >
+                            <md-grid-tile-header>
+                                <h3>Volumen</h3>
+                            </md-grid-tile-header>
+                            <div id="chVAcac" class="chart" ></div>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-card>
+
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">Redes menores a 3" Volumen de perdida calculado {{mn3.v|number:1}} m^3</div>
+                    </div>
+                </md-toolbar>
+                <md-card>
+                    <md-grid-list
+                        md-cols-xs="1" md-cols-sm="2" md-cols-md="2" md-cols-gt-md="2"
+                        md-row-height-gt-md="1:1" md-row-height="2:2"
+                        md-gutter="12px" md-gutter-gt-sm="8px" >
+
+                        <md-grid-tile >
+                            <md-grid-tile-header>
+                                <h3>Tiempo promedio</h3>
+                            </md-grid-tile-header>
+                            <div id="chTpMen3" class="chart" ></div>
+                        </md-grid-tile>
+
+                        <md-grid-tile>
+                            <md-grid-tile-header>
+                                <h3>Cantidad de avisos</h3>
+                            </md-grid-tile-header>
+                            <div id="chCMen3" class="chart" ></div>
+                        </md-grid-tile>
+                        <md-grid-tile md-rowspan="1" md-colspan="2" md-colspan-sm="1" md-colspan-xs="1">
+                            <md-grid-tile-header>
+                                <h3>Volumen</h3>
+                            </md-grid-tile-header>
+                            <div id="chVMen3" class="chart" ></div>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-card>
+
+
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">Redes >3" Volumen de perdida calculado {{my3.v|number:1}} m^3</div>
+                    </div>
+                </md-toolbar>
+                <md-card>
+                    <md-grid-list
+                        md-cols-xs="1" md-cols-sm="2" md-cols-md="2" md-cols-gt-md="2"
+                        md-row-height-gt-md="1:1" md-row-height="2:2"
+                        md-gutter="12px" md-gutter-gt-sm="8px" >
+
+                        <md-grid-tile >
+                            <md-grid-tile-header>
+                                <h3>Tiempo promedio</h3>
+                            </md-grid-tile-header>
+                            <div id="chTpMyr3" class="chart" ></div>
+                        </md-grid-tile>
+
+                        <md-grid-tile>
+                            <md-grid-tile-header>
+                                <h3>Cantidad de avisos</h3>
+                            </md-grid-tile-header>
+                            <div id="chCMyr3" class="chart" ></div>
+                        </md-grid-tile>
+
+                        <md-grid-tile md-rowspan="1" md-colspan="2" md-colspan-sm="1" md-colspan-xs="1">
+                            <md-grid-tile-header>
+                                <h3>Volumen</h3>
+                            </md-grid-tile-header>
+                            <div id="chVMyr3" class="chart" ></div>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-card>
+
+
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">Pilas - Volumen calculado {{pila.v|number:1}} m^3</div>
+                    </div>
+                </md-toolbar>
+                <md-card> 
+                    <md-grid-list
+                        md-cols-xs="1" md-cols-sm="2" md-cols-md="2" md-cols-gt-md="2"
+                        md-row-height-gt-md="1:1" md-row-height="2:2"
+                        md-gutter="12px" md-gutter-gt-sm="8px" >
+
+                        <md-grid-tile >
+                            <md-grid-tile-header>
+                                <h3>Cantidad de Avisos</h3>
+                            </md-grid-tile-header>
+                            <div id="chCPila" class="chart" ></div>
+                        </md-grid-tile>
+                        <md-grid-tile >
+                            <md-grid-tile-header>
+                                <h3>Volumen</h3>
+                            </md-grid-tile-header>
+                            <div id="chVPila" class="chart" ></div>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-card>
+
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">Hidrantes - Volumen calculado {{hidra.v|number:1}} m^3</div>
+                    </div>
+                </md-toolbar>
+                <md-card> 
+                    <md-grid-list
+                        md-cols-xs="1" md-cols-sm="2" md-cols-md="2" md-cols-gt-md="2"
+                        md-row-height-gt-md="1:1" md-row-height="2:2"
+                        md-gutter="12px" md-gutter-gt-sm="8px" >
+
+                        <md-grid-tile >
+                            <md-grid-tile-header>
+                                <h3>Cantidad de Avisos</h3>
+                            </md-grid-tile-header>
+                            <div id="chCHidra" class="chart" ></div>
+                        </md-grid-tile>
+                        <md-grid-tile >
+                            <md-grid-tile-header>
+                                <h3>Volumen</h3>
+                            </md-grid-tile-header>
+                            <div id="chVHidra" class="chart" ></div>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-card>
+                <md-toolbar class="md-whiteframe-1dp">
+                    <div class="md-toolbar-tools">
+                        <div class="md-title">Lavado de redes - Volumen calculado {{LvR.v|number:1}} m^3</div>
+                    </div>
+                </md-toolbar>
+                <md-card> 
+                    <md-grid-list
+                        md-cols-xs="1" md-cols-sm="1" md-cols-md="1" md-cols-gt-md="1"
+                        md-row-height-gt-md="2:1" md-row-height="2:1"
+                        md-gutter="12px" md-gutter-gt-sm="8px" >
+
+                        <md-grid-tile >
+                            <md-grid-tile-header>
+                                <h3>Cantidad de Avisos</h3>
+                            </md-grid-tile-header>
+                            <div id="chLvR" class="chart" ></div>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-card>
+            </div>
+            <md-toolbar class="md-whiteframe-1dp">
+                <div class="md-toolbar-tools">
+                    <div class="md-title">Carrotanques - Volumen calculado {{CrrT.v|number:1}} m^3</div>
+                </div>
+            </md-toolbar>
+            <md-card> 
+                <md-grid-list
+                    md-cols-xs="1" md-cols-sm="1" md-cols-md="1" md-cols-gt-md="1"
+                    md-row-height-gt-md="2:1" md-row-height="2:1"
+                    md-gutter="12px" md-gutter-gt-sm="8px" >
+
+                    <md-grid-tile >
+                        <md-grid-tile-header>
+                            <h3>Cantidad de Avisos</h3>
+                        </md-grid-tile-header>
+                        <div id="chCrrT" class="chart" ></div>
+                    </md-grid-tile>
+                </md-grid-list>
+            </md-card>
+            <md-toolbar class="md-whiteframe-1dp">
+                <div class="md-toolbar-tools">
+                    <div class="md-title">Fugas no visibles - Volumen calculado {{FnV.v|number:1}} m^3</div>
+                </div>
+            </md-toolbar>
+            <md-card> 
+                <md-grid-list
+                    md-cols-xs="1" md-cols-sm="1" md-cols-md="1" md-cols-gt-md="1"
+                    md-row-height-gt-md="2:1" md-row-height="2:1"
+                    md-gutter="12px" md-gutter-gt-sm="8px" >
+
+                    <md-grid-tile >
+                        <md-grid-tile-header>
+                            <h3>Cantidad de Avisos</h3>
+                        </md-grid-tile-header>
+                        <div id="chFnV" class="chart" ></div>
+                    </md-grid-tile>
+                </md-grid-list>
+            </md-card>
+        </div>
+
+    </div>
+    <footer>
+
+        <div layout="row" layout-align="center center" flex>
+            GERENCIA DE TECNOLOGIA -
+            DIRECCIÓN INGENIERIA ESPECIALIZADA - 2018
+        </div>
+        <div layout="column" layout-align="center center" flex>
+            <spam><a data-rel="external" href="mailto:dmanrique@acueducto.com.co">dmanrique@acueducto.com.co</a></spam>
+            <a data-rel="external" href="mailto:dalxder@gmail.com">dalxder@gmail.com</a>
+        </div>
+        <!-- <b>Procesamiento automático y visualización de datos</b>
+         <p>Las pérdidas técnicas se han calculado para periodos puntuales y de 
+             manera independiente por cada zona de servicio, teniendo en cuenta 
+             parámetros diferentes</p>-->
+        <!--</md-toolbar>-->
+    </footer>
+
+
+    <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script type='text/javascript' src="https://unpkg.com/xlsx@0.14.0/dist/xlsx.full.min.js"></script>
+
+    <script type='text/javascript' src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js" integrity="sha256-/GKyJ0BQJD8c8UYgf7ziBrs/QgcikS7Fv/SaArgBcEI=" crossorigin="anonymous"></script>
+    <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+    <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.7/c3.min.js"></script>
+
+
+
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular-messages.min.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3-angular/1.4.0/c3-angular.min.js" integrity="sha256-BZ5kOK4LuN+yKy6vm6hTtSOD2OpnCHllx92hIgD9kaQ=" crossorigin="anonymous"></script>
+    <script src="https://cdn.rawgit.com/fagnersilvamartins/angular-material-collapsible/8426264b/dist/js/collapsible.min.js"></script>
+    <script src="https://cdn.rawgit.com/fagnersilvamartins/angular-material-collapsible/8426264b/dist/js/collapsibleDirective.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.10/md-data-table.min.js" integrity="sha256-qLpj3mWjwWn2Q4NHxBClIiNUKKfaYPdq3yuXpPwwd1s=" crossorigin="anonymous"></script>
+
+    <script src="js/app.js"></script>
+
+
+    <script src="js/controller/controlador.js"></script>
+
+    <script src="js/controller/inputCtrl.js"></script>
+    <script src="js/controller/tablaCtrl.js"></script>
+    <script src="js/directives/inputFiles.js"></script>
+    <script src="js/directives/inputRefs.js"></script>
+    <script src="js/service/xlsReader.js"></script>
+    <script type="text/javascript">
+    </script>
+</body>
+</html>

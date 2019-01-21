@@ -1,0 +1,550 @@
+﻿<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <title>Sankey Diagram</title>
+    <style>
+
+        @import url(http://fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i|PT+Sans|PT+Sans:b);
+
+        #chart {
+
+            font: 11px sans-serif;
+        }
+
+        .node rect {
+            cursor: move;
+            fill-opacity: .9;
+            shape-rendering: crispEdges;
+        }
+
+        .node text {
+            pointer-events: none;
+
+        }
+
+        .link {
+            fill: none;
+            stroke:grey;
+            stroke-opacity: .2;
+        }
+
+        .link:hover {
+            stroke-opacity: .5 !important;
+        }
+
+    </style>
+    <style type="text/css">
+        svg text {
+            font-size: 14px;
+            stroke-width: 0;
+            fill: black;
+        }
+        html, body {
+            font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .sankeybox {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+        .sankey .node text {
+            pointer-events: none;
+        }
+        .sankey .link {
+            fill: none;
+            stroke: #000;
+            stroke-opacity: .16;
+            transition-property: stroke-opacity;
+            transition-duration: 0.5s;
+        }
+        .sankey .link:hover {
+            stroke-opacity: .5;
+        }
+
+        h1, h2, h3 {
+            line-height: 12px !important;
+        }
+        .d3-tip h1 {
+            font-size: 14px;
+            padding: 0;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+        .d3-tip h2 {
+            font-weight: bold;
+            font-size: 12px;
+            padding-right: inherit;
+            padding-left: inherit;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            margin: 0px;
+        }
+        .d3-tip h3 {
+            font-weight: normal;
+            font-size: 8px;
+            margin: 0;
+            padding: 0;
+        }
+        .d3-tip table {
+            font-weight: normal;
+            font-size: 12px;
+            padding: none;
+            margin: 0;
+            width: 100%;
+            border: none;
+            border-collapse: collapse;
+        }
+        .d3-tip td {
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+        .d3-tip .col-left {
+            padding-right: 8px;
+        }
+        .d3-tip .table-wrapper {
+            margin: 0;
+            padding: inherit;
+            border: none;
+        }
+        .d3-tip {
+            line-height: 1;
+            font-weight: normal;
+            padding: 4px;
+            background: white;
+            color: black;
+            border-radius: 2px;
+            pointer-events: none;
+            background:  white;
+            box-shadow: 1px 1px 4px grey;
+        }
+    </style>	
+    <body>
+        <h1>Índice de agua no contabilizada EAAB DIE, Dirección de informatica</h1>
+        <b>Dany Alexander Manrique López</b>
+        <div id="chart"></div>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script src="https://bl.ocks.org/d3noob/raw/013054e8d7807dff76247b81b0e29030/001ef0f23a70f4cc3711f1aa505c12e284430d27/sankey.js"></script>
+        <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+        <script type='text/javascript' src="js/balanceEAB.js"></script>
+        <script type='text/javascript'>
+            var dt = [];
+            window.onload = function () {
+
+                var d = balanceEAB(getData());
+                console.log(d);
+
+
+
+                var data = [
+                    ["AS", "CA", d.CA.p()],
+                    ["CA", "CAF", d.data.FM.v / d.data.AS * 100],
+                    ["CAF", "FM", d.data.FM.v / d.data.AS * 100],
+                    ["CAF", "FNM", d.data.FNM.v / d.data.AS * 100],
+
+                    ["FM", "AF", d.data.FM.v / d.data.AS * 100],
+                    ["FNM", "AF", d.data.FNM.v / d.data.AS * 100],
+
+                    ["CA", "NFA", d.NFA.v() / d.data.AS * 100],
+                    ["NFA", "NFM", d.data.NFA.medido.v / d.data.AS * 100],
+                    ["NFA", "NFNM", d.NFA.NFNM.p()],
+
+                    ["NFM", "ANFC", d.data.NFA.medido.v / d.data.AS * 100],
+                    ["NFNM", "ANFC", d.NFA.NFNM.p()],
+
+                    ["AS", "PA", d.PAR.p()],
+                    ["PA", "PAC", d.PAC.p()],
+                    ["PAC", "CNA", d.CNA.p()],
+                    ["PAC", "IM", d.IM.p()],
+                    ["CNA", "ANFC", d.CNA.p()],
+                    ["IM", "ANFC", d.IM.p()],
+                    ["PA", "PRF", d.PRF.p()],
+
+                    ["PRF", "Reparación Acometidas", d.data.PRF["Reparación Acometidas"].v / d.data.AS * 100],
+                    ["PRF", 'Reparación redes <3"', d.data.PRF['Reparación redes <3pul'].v / d.data.AS * 100],
+                    ["PRF", 'Reparación redes >=3"', d.data.PRF['Reparación redes >=3pul'].v / d.data.AS * 100],
+                    ["PRF", "Suministro x carrotanque", d.data.PRF["Suministro x carrotanque"].v / d.data.AS * 100],
+                    ["PRF", "Operación de pilas", d.data.PRF["Operación de pilas"].v / d.data.AS * 100],
+                    ["PRF", "Operación de hidrantes", d.data.PRF["Operación de hidrantes"].v / d.data.AS * 100],
+                    ["PRF", "Lavado de redes", d.data.PRF["Lavado de redes"].v / d.data.AS * 100],
+                    ["PRF", "Mantenimiento alcantarillado", d.data.PRF["Mantenimiento alcantarillado"].v / d.data.AS * 100],
+                    ["PRF", "Fugas no visibles", d.data.PRF["Fugas no visibles"].v / d.data.AS * 100],
+
+                    ["Reparación Acometidas", "TPRF", d.data.PRF["Reparación Acometidas"].v / d.data.AS * 100],
+                    ['Reparación redes <3"', "TPRF", d.data.PRF['Reparación redes <3pul'].v / d.data.AS * 100],
+                    ['Reparación redes >=3"', "TPRF", d.data.PRF['Reparación redes >=3pul'].v / d.data.AS * 100],
+                    ["Suministro x carrotanque", "TPRF", d.data.PRF["Suministro x carrotanque"].v / d.data.AS * 100],
+                    ["Operación de pilas", "TPRF", d.data.PRF["Operación de pilas"].v / d.data.AS * 100],
+                    ["Operación de hidrantes", "TPRF", d.data.PRF["Operación de hidrantes"].v / d.data.AS * 100],
+                    ["Lavado de redes", "TPRF", d.data.PRF["Lavado de redes"].v / d.data.AS * 100],
+                    ["Mantenimiento alcantarillado", "TPRF", d.data.PRF["Mantenimiento alcantarillado"].v / d.data.AS * 100],
+                    ["Fugas no visibles", "TPRF", d.data.PRF["Fugas no visibles"].v / d.data.AS * 100],
+
+                    ["AS", "?", d.XE.p()],
+                    ["?", "¿?", d.XE.p()],
+                    ["¿?", "!¿?", d.XE.p()],
+                    ["!¿?", "X Explicar", d.XE.p()]
+                ];
+                data.titles = {
+                    AS: "Agua Suministrada",
+                    AF:"Agua Facturada",
+                    PRF: "Pérdidas Reales Físicas",
+                    CA: "Consumo Autorizado",
+                    NFM:"No Facturado Medido"
+                    
+                };
+                console.log("titles", data.titles);
+                chart(data);
+
+            };
+
+            function getData() {
+
+                var dataP = {};
+                ///////////////////////////////////////////////////////////////////7//////
+                // Datos iniciales (Restful)
+                //var data = {};
+                // A. Total de agua suministrada.
+                dataP.VIG = {inicio: "16-mar-18",
+                    final: "21-jul-18"};
+                dataP.AS = 13523976;
+                dataP.FM = {c: 372049, v: 8939180};
+                dataP.FNM = {c: 1695, v: 45593};
+                dataP.NFA = {medido: {c: 30721, v: 180559},
+                    NFNM: {
+                        Bomberos: {c: 45, v: 6600},
+                        Carrotanques: {c: 1, v: 48},
+                        "Lavado tanques": {c: 2, v: 1274}
+                    }
+                };
+                // Consumos no autorizados
+                dataP.CNA = {
+                    "Potenciales totalizadoras": {c: 2890, v: 128756},
+                    "Diferencias SAPvs Spool": {c: 140, v: 3264},
+                    "Procesos defraudacion": {c: 112, v: 3727},
+                    "Cortadas presentan lectura": {c: 151, v: 3602}
+                };
+                dataP.IM = {"Errores de lectura": {c: 245, v: 3157},
+                    "Anomalías Crítica": {c: 111, v: 1806},
+                    "Sin consumo": {c: 14795, v: 432657},
+                    "Predios facturados x promedio": {c: 8132, v: 122875},
+                    "Consumo Sistemático": {c: 21602, v: 351141},
+                    "Predios Obsolecencia": {c: 4609, v: 189415}};
+                dataP.PRF = {
+                    "Reparación Acometidas": {v: 57851},
+                    'Reparación redes <3pul': {v: 15348},
+                    'Reparación redes >=3pul': {v: 225534},
+                    "Suministro x carrotanque": {v: 2},
+                    "Operación de pilas": {v: 52},
+                    "Operación de hidrantes": {v: 4244},
+                    "Lavado de redes": {v: 669},
+                    "Mantenimiento alcantarillado": {v: 1000},
+                    "Fugas no visibles": {v: 13303}
+                };
+                dataP.Historico = [["FCC", 8932692, 9026111, 8548412, 8835738],
+                    ["Promedio Cuenta", 24.1, 24.4, 23.1, 23.9]];
+
+                return dataP;
+            }
+
+
+
+        </script>
+        <script>
+
+
+            function chart(data) {
+                d3.select('.d3-tip-nodes').remove();
+                var nodeTooltipOffset = 130;
+                //var titulos= data.title;
+                var margin = {top: 1, right: 10, bottom: 6, left: 2},
+                        width = window.innerWidth - margin.left - margin.right,
+                        height = window.innerHeight - margin.top - margin.bottom - 150;
+
+                var formatNumber = d3.format(",.1f"),
+                        format = function (d) {
+                            return formatNumber(d) + " % AS";
+                        },
+                        color = color = d3.scale.category20();//d3.scaleOrdinal(d3.schemeCategory20);//d3js v3.
+                function formatAmount(val) {
+                    //return val.toLocaleString("en-US", {style: 'currency', currency: "USD"}).replace(/\.[0-9]+/, "");
+                    return parseFloat(val).toFixed(1) + " % AS";
+                }
+                ;
+
+                var tipNodes = d3.tip()
+                        .attr('class', 'd3-tip d3-tip-nodes')
+                        .offset([-10, 0]);
+
+                tipNodes.html(function (d) {
+                    var object = d3.entries(d),
+                            nodeName = object[1].value,
+                            linksTo = object[3].value,
+                            linksFrom = object[4].value,
+                            html;
+                    //console.log("node",nodeName,"to",linksTo,"from",linksFrom);        
+                    var html = '<div class="table-wrapper">' +
+                            '<h1>' + nodeName + " (" + formatAmount(linksFrom) + ')</h1>' +
+                            '<table>';
+                    if (linksFrom.length > 0 & linksTo.length > 0) {
+                        html += '<tr><td><h2>Input:</h2></td><td></td></tr>';
+                    }
+                    for (i = 0; i < linksFrom.length; ++i) {
+                        html += '<tr>' +
+                                '<td class="col-left">' + linksTo[i].source.name + '</td>' +
+                                '<td align="right">' + formatAmount(linksFrom[i].value) + '</td>' +
+                                '</tr>';
+                    }
+                    if (linksFrom.length > 0 & linksTo.length > 0) {
+                        html += '<tr><td><h2>Output:</h2></td><td></td></tr>';
+                    }
+                    for (i = 0; i < linksTo.length; ++i) {
+                        html += '<tr>' +
+                                '<td class="col-left">' + linksTo[i].source.name + '</td>' +
+                                '<td align="right">' + formatAmount(linksTo[i].value) + '</td>' +
+                                '</tr>';
+                    }
+                    html += '</table></div>';
+                    return html;
+                });
+                var svg = d3.select("#chart").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .call(tipNodes)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                var sankey = d3.sankey()
+                        .nodeWidth(35)
+                        .nodePadding(10)
+                        .size([width, height]);
+
+                var path = sankey.link();
+
+                //set up graph in same style as original example but empty
+                var graph = {"nodes": [], "links": []};
+                data.forEach(function (d) {
+                    graph.nodes.push({"name": d[0]});
+                    graph.nodes.push({"name": d[1]});
+                    graph.links.push({"source": d[0],
+                        "target": d[1],
+                        "value": +d[2]});
+                });
+
+                // return only the distinct / unique nodes
+                graph.nodes = d3.keys(d3.nest()
+                        .key(function (d) {
+                            return d.name;
+                        })
+                        .map(graph.nodes));
+
+                // loop through each link replacing the text with its index from node
+                graph.links.forEach(function (d, i) {
+                    graph.links[i].source = graph.nodes.indexOf(graph.links[i].source);
+                    graph.links[i].target = graph.nodes.indexOf(graph.links[i].target);
+                });
+
+                //now loop through each nodes to make nodes an array of objects
+                // rather than an array of strings
+                graph.nodes.forEach(function (d, i) {
+                    graph.nodes[i] = {"name": d, titulo: data.titles[d]};
+                });
+
+                sankey
+                        .nodes(graph.nodes)
+                        .links(graph.links)
+                        .layout(0);
+
+                var link = svg.append("g").selectAll(".link")
+                        .data(graph.links)
+                        .enter().append("path")
+                        .attr("class", "link")
+                        .attr("d", path)
+                        .attr("id", function (d, i) {
+                            d.id = i;
+                            return "link-" + i;
+                        })
+                        .style("stroke-width", function (d) {
+                            return Math.max(1, d.dy);
+                        })
+                        .sort(function (a, b) {
+                            return b.dy - a.dy;
+                        });
+
+                link.append("title")
+                        .text(function (d) {
+                            return d.source.titulo + " --- " + d.target.titulo + "\n" + format(d.value);
+                        });
+
+                var node = svg.append("g").selectAll(".node")
+                        .data(graph.nodes)
+                        .enter().append("g")
+                        .attr("class", "node")
+                        .attr("transform", function (d) {
+                            return "translate(" + d.x + "," + d.y + ")";
+                        })
+                        .on("dblclick", highlight_node_links_click)
+                        //.on("mouseout", highlight_node_links)
+                        //.on("mouseover", highlight_node_links)
+                        .on('mousemove', function (event) {
+                            //highlight_node_links();
+                            //console.log("sel",document.getElementsByClassName('d3-tip-nodes'),$('.d3-tip-nodes'));
+                            console.log("sdd", tipNodes.show);
+                            tipNodes
+                                    .style("top", (d3.event.pageY - $('.d3-tip-nodes').height() - 20) + "px")
+                                    .style("left", function () {
+                                        var left = (Math.max(d3.event.pageX - nodeTooltipOffset, 10));
+                                        left = Math.min(left, window.innerWidth - $('.d3-tip').width() - 20);
+                                        return left + "px";
+                                    });
+                        })
+                        .on('mouseover', tipNodes.show)
+                        .on('mouseout', tipNodes.hide)
+                        .call(d3.behavior.drag()
+                                .origin(function (d) {
+                                    return d;
+                                })
+                                // interfering with click .on("dragstart", function() { this.parentNode.appendChild(this); })
+                                .on("drag", dragmove));
+
+                node.append("rect")
+                        .attr("height", function (d) {
+                            return d.dy;
+                        })
+                        .attr("width", sankey.nodeWidth())
+                        .style("fill", function (d) {
+                            return d.color = color(d.name.replace(/ .*/, ""));
+                        })
+                        .style("stroke", function (d) {
+                            return d3.rgb(d.color).darker(2);
+                        })
+                        .append("title")
+                        .text(function (d) {
+                            return d.name + ": " + d.titulo + "\n" + format(d.value);
+                        });
+
+                node.append("text")
+                        .attr("x", -6)
+                        .attr("y", function (d) {
+                            return d.dy / 2;
+                        })
+                        .attr("dy", ".35em")
+                        .attr("text-anchor", "end")
+                        .attr("transform", null)
+                        .text(function (d) {
+                            return d.name;
+                        })
+                        .filter(function (d) {
+                            return d.x < width / 2;
+                        })
+                        .attr("x", 6 + sankey.nodeWidth())
+                        .attr("text-anchor", "start");
+
+                function dragmove(d) {
+                    d3.select(this).attr("transform", "translate(" + (
+                            d.x = Math.max(0, Math.min(width - d.dx, d3.event.x))
+                            ) + "," +
+                            (d.y = Math.max(0, Math.min(height - d.dy, d3.event.y)))
+                            + ")");
+                    sankey.relayout();
+                    link.attr("d", path);
+                }
+
+                function highlight_node_links(node, i) {
+
+                    var remainingNodes = [],
+                            nextNodes = [];
+
+                    var stroke_opacity = 0;
+                    if (d3.select(this).attr("mouse-event") === "1") {
+
+                        d3.select(this).attr("mouse-event", "0");
+                        stroke_opacity = 0.2;
+                    } else {
+                        d3.select(this).attr("mouse-event", "1");
+                        stroke_opacity = 0.5;
+                    }
+
+                    var traverse = [{
+                            linkType: "sourceLinks",
+                            nodeType: "target"
+                        }, {
+                            linkType: "targetLinks",
+                            nodeType: "source"
+                        }];
+
+                    traverse.forEach(function (step) {
+                        node[step.linkType].forEach(function (link) {
+                            remainingNodes.push(link[step.nodeType]);
+                            highlight_link(link.id, "stroke-opacity", stroke_opacity);
+                        });
+
+                        while (remainingNodes.length) {
+                            nextNodes = [];
+                            remainingNodes.forEach(function (node) {
+                                node[step.linkType].forEach(function (link) {
+                                    nextNodes.push(link[step.nodeType]);
+                                    highlight_link(link.id, "stroke-opacity", stroke_opacity);
+                                });
+                            });
+                            remainingNodes = nextNodes;
+                        }
+                    });
+                }
+                function highlight_node_links_click(node, i) {
+
+                    var remainingNodes = [],
+                            nextNodes = [];
+
+                    var stroke = "grey";
+                    if (d3.select(this).attr("mouse-click") === "1") {
+
+                        d3.select(this).attr("mouse-click", "0");
+                        stroke = "grey";
+                    } else {
+                        d3.select(this).attr("mouse-click", "1");
+                        stroke = "green";
+                    }
+
+                    var traverse = [{
+                            linkType: "sourceLinks",
+                            nodeType: "target"
+                        }, {
+                            linkType: "targetLinks",
+                            nodeType: "source"
+                        }];
+
+                    traverse.forEach(function (step) {
+                        node[step.linkType].forEach(function (link) {
+                            remainingNodes.push(link[step.nodeType]);
+                            highlight_link(link.id, "stroke", stroke);
+                        });
+
+                        while (remainingNodes.length) {
+                            nextNodes = [];
+                            remainingNodes.forEach(function (node) {
+                                node[step.linkType].forEach(function (link) {
+                                    nextNodes.push(link[step.nodeType]);
+                                    highlight_link(link.id, "stroke", stroke);
+                                });
+                            });
+                            remainingNodes = nextNodes;
+                        }
+                    });
+                }
+                function highlight_link(id, item, value) {
+                    var sel = d3.select("#link-" + id);
+                    sel.style(item, value);
+                }
+            }
+
+        </script>

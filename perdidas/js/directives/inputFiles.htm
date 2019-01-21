@@ -1,0 +1,18 @@
+<div>
+    <input id="filesInput" type="file" class="ng-hide" accept=".xls,.xslx,.XLS,.XLSX" multiple>
+    <md-input-container  md-no-float>
+        <label>Archivo Base</label>
+        <input id="textInput" ng-click="input_click()" ng-model="files[0].name" type="text" placeholder="Seleccionar archivos" ng-readonly="true" required/>
+    </md-input-container>
+    <md-input-container  md-no-float ng-show="mostrar">
+        <label>Archivo Base</label>
+        <input ng-model="files[1].name" type="text" ng-readonly="true" ng-click="input_click()" placeholder="Seleccionar archivos" required/>
+    </md-input-container>
+    <md-input-container  md-no-float ng-show="mostrar">
+        <label>Archivo Base</label>
+        <input ng-model="files[2].name" type="text" ng-readonly="true" ng-click="input_click()" placeholder="Seleccionar archivos" required/>
+    </md-input-container>
+    <!--<md-button id="uploadButton" ng-click="procesar($event)" class="md-raised md-primary" aria-label="attach_file" ng-show="mostrar">
+        Procesar
+    </md-button>-->
+</div>

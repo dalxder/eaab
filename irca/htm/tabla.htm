@@ -1,0 +1,17 @@
+<md-table-container>
+    <table md-table ng-model="selected" md-progress="promise" rz-table >
+        <thead ng-if="!options.decapitate" md-head md-order="query.order"  md-on-reorder="logOrder"><!--  -->
+            <tr md-row>
+                <th ng-repeat="(kh,vh) in labels" rz-col="{{kh}}" md-column md-order-by="{{kh}}" > <span >{{vh}}</span><!--<div class="rz-handle"></div><div class="resize-handle" ng-mousedown="mousedown($event)"></div>--></th>
+
+            </tr>
+        </thead>
+        <tbody md-body>
+            <tr md-row ng-click="logItem(dr)" ng-repeat="(kr,dr) in fil = (json | filter: searchKeyword | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit)">
+                <td class="width-override"  md-cell ng-repeat="(kd,vd) in dr">{{vd}}</td>
+            </tr>
+        </tbody>
+    </table>
+</md-table-container>
+<md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{(json|filter:searchKeyword).length}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination">
+</md-table-pagination>

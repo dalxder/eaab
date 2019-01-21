@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+        <link rel="stylesheet" href="http://primefaces.org/primeui/showcase/themes/aristo/theme.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.structure.css"/>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" />
+
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.css"/>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/primeui@4.1.15/primeui.min.css"/>
+        <link rel="stylesheet" href="http://primefaces.org/primeui/showcase/resources/css/perfect-scrollbar.css"/>
+
+        <!-- Angular Material Library -->
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons"/>
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.10/md-data-table.min.css" integrity="sha256-7BlE1mNKbk+QTDcmrBGItRe3Dt7mJr+QNJzTrwDEt/E=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.rawgit.com/fagnersilvamartins/angular-material-collapsible/8426264b/dist/css/collapsible.min.css" />
+
+
+
+
+        <style>
+            div.fileinputs {
+                position: relative;
+            }
+
+            div.fakefile {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                z-index: 1;
+            }
+
+            input.file {
+                width: 205px;
+                position: relative;
+                text-align: right;
+                -moz-opacity:0 ;
+                filter:alpha(opacity: 0);
+                opacity: 0;
+                z-index: 2;
+            }
+
+            .ui-datatable {
+                margin-bottom: 40px;
+            }
+
+            /*
+                        .ui-datatable table {
+                            table-layout: auto !important;
+            
+                        }
+            */
+
+        </style>
+
+
+    </head>
+    <body >
+        <div ng-cloak ng-app="myApp" class="ng-cloak md-padding" ng-controller="Controller as ctrl" layout="column"> </div>
+        <form>
+            <div class="fileinputs">
+                <input class="file" type="file" id="fileinput" accept=".txt,.csv,.dat" />
+                <div class="fakefile">
+                    <input id="inpShow"/>
+                    <button>Datos</button>
+                </div>
+
+                <input type="reset"  id="cancel" value="Cancelar"/>
+                <input type='button' id='btnLoad' value='Cargar archivo'/>
+            </div>
+            <div class="csv"></div>
+
+        </form>
+        <!--<div ng-app="myApp"></div>-->
+
+
+        <div  >Cantidad de muestras fisicas: <p id="muestras"></p></div>
+
+        <input id="globalFilter" placeholder="Global Filter" size="30"/> 
+        <div id="tbl" ></div>
+
+        <!--
+                <div id="default" ></div>
+        
+                <div id="carou">
+                    <ul id="list">
+                        <li>
+                            <h1>tabla de datos</h1>
+        
+                        </li>
+                        <li>
+                            <div class="ui-g">
+                                <div class="ui-g-12" id="chartXzonas"></div>
+        
+                            </div>
+                        </li> 
+                        <li >
+                            <div class="ui-g">
+                                <div class="ui-g-12" id="chartXcor"></div>
+                                <div class="ui-g-12" id="chartXparam"></div>
+                            </div>     
+        
+                        </li>
+        
+                    </ul>
+                </div>
+                <script type="text/javascript">
+                    $('#carou').css('visibility', 'hidden');
+                    $(function () {
+                        $('#list').puicarousel({
+                            numVisible: 1,
+                            pageLinks: 5,
+                            responsive: true});
+        
+                    });
+                </script>-->
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/x-tag/1.5.11/x-tag-core.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/primeui@4.1.15/primeui.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/primeui@4.1.15/plugins/plugins-all.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/primeui@4.1.15/plugins/mustache.min.js"></script> 
+        <script src="https://cdn.jsdelivr.net/npm/primeui@4.1.15/primeelements.min.js"></script>
+
+
+        <!-- Angular Material requires Angular.js Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+
+        <!-- Angular Material Library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.10/md-data-table.min.js" integrity="sha256-qLpj3mWjwWn2Q4NHxBClIiNUKKfaYPdq3yuXpPwwd1s=" crossorigin="anonymous"></script>
+        <script src="js/app.js"></script>
+
+        <script>
+
+            $(document).ready(function () {
+
+                //$( "#accordion" ).accordion();
+                $("#btnLoad").css('visibility', 'hidden');
+                $("#cancel").css('visibility', 'hidden');
+                $("#cancel").click(function () {
+                    $("#btnLoad").css('visibility', 'hidden');
+                    $("#cancel").css('visibility', 'hidden');
+                });
+                $("#fileinput").change(function () {
+
+                    var name = $('#fileinput')[0].files[0].name;
+                    if (name !== "" || name === null) {
+                        $("#btnLoad").css('visibility', 'visible');
+                        $("#cancel").css('visibility', 'visible');
+                        $("#inpShow").val(name);
+                    } else {
+                        $("#btnLoad").css('visibility', 'hidden');
+
+                    }
+
+                });
+
+                // display file contents
+                $('#btnLoad').click(function () {
+
+                    var file = $('#fileinput')[0].files[0];
+                    if (file) {
+
+                        // create reader
+                        var reader = new FileReader();
+                        reader.readAsText(file, 'ISO-8859-1');
+                        reader.onload = function (e) {
+                            var csvRow = e.target.result.split("\n");
+                            var numLote = [];
+                            var muestraFis = [];
+                            var caracteristicas = [];
+                            //var labels = csvRow[0].split(",");
+                            //csvRow.shift();
+                            var csvResult = [];
+                            var i = 0;
+                            var md = [];
+                            var d;
+                            var dt;
+                            var dataJson = {};
+
+
+
+                            csvRow.forEach(function (it_1, x) {
+                                //console.log(csvRow[x-2]);
+                                dt = {};
+                                if (it_1.includes("AGU-")) {
+                                    d = it_1.split("|");
+
+                                    var muestra = d[16];
+                                    var carac = d[7];
+                                    carac = carac.split(" ");
+                                    var c = [];
+                                    carac.forEach(function (it, i) {
+                                        if (it !== "") {
+                                            c.push(it);
+
+                                        }
+                                    });
+
+                                    carac = c.join(" ");
+
+                                    var valor = d[15].replace(" ", "").replace(",", ".").replace("NO DETECTABLE", "-999").replace("AUSENCIA", null);//NO DETECTABLE	AUSENCIA
+                                    //muestras
+                                    if (!dataJson.hasOwnProperty(muestra)) {
+                                        dataJson[muestra] = {};
+                                    }
+                                    if (!dataJson[muestra].hasOwnProperty(carac)) {
+                                        dataJson[muestra][carac] = {};
+                                    }
+                                    dataJson[muestra][carac] = valor;
+
+                                    i++;
+                                }
+
+                            });
+                            cantidad = Object.keys(dataJson).length;
+
+                            $('#muestras').text(cantidad);
+
+
+                            //var dtJson = JSON.parse(JSON.stringify(csvResult));//.stringify(e.target.result.split('\n'));
+                            //$('.csv').append(csvResult).append(dtJson);
+                            $('#fileinput').val('');
+                            $("#inpShow").val("");
+                            $("#btnLoad").css('visibility', 'hidden');
+                            $("#cancel").css('visibility', 'hidden');
+
+
+
+                            var items = Object.keys(dataJson);
+                            var tabla = [];
+                            items.forEach(function (it) {
+                                var i = Object.keys(it);
+                                var rowData = {muestraFis: it};
+                                $.extend(true, rowData, dataJson[it]);
+                                tabla.push(rowData);
+                            });
+
+                            var colTabla = [];
+                            Object.keys(tabla[0]).forEach(function (it) {
+                                colTabla.push({field: it, headerText: it, sortable: true, filter: true});
+                            });
+                            console.log("termino la lectura de datos", Object.keys(dataJson["2000301283"]));
+
+                            $('#tbl').puidatatable({
+                                paginator: {
+                                    rows: 20
+                                },
+                                globalFilter: '#globalFilter',
+                                caption: 'Tabla de datos',
+                                resizableColumns: true,
+                                columnResizeMode: 'expand',
+                                responsive: true,
+                                draggableColumns: true,
+                                columns: colTabla,
+                                datasource: tabla
+                            });
+
+                        };
+                    }
+                    $('#carou').css('visibility', 'visible');
+                });
+            });
+
+
+        </script>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Registro de Información para el cálculo del balance hídrico</title>  
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons"/>
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.css"/>
+        <link rel="stylesheet" href="css/style.css"/>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+
+            md-input-container .md-auto-hide .md-input-message-animation:not(.ng-animate) {
+                opacity: 0;
+                margin-top: -100px;
+            }
+            md-input-container:not(.md-input-invalid) .md-auto-hide .md-input-message-animation {
+                opacity: 0;
+                margin-top: -100px;
+            }
+
+        </style>
+    </head>
+    <body>        
+        <div ng-cloak ng-app="myApp" class="ng-cloak md-padding" ng-controller="RegController as ctrl" layout="column">
+
+            <md-toolbar class="md-toolbar-tools" >
+                <h2>Formulario de registro de datos</h2>
+
+                <span flex></span>
+                <md-button href="index.html">Balance hídrico</md-button>
+                <md-button href="diagramaBalance.html">Ver diagrama de flujo</md-button>
+            </md-toolbar>
+            <md-content class="md-padding" >
+                <div layout="column" >
+                    <form  novalidate name="myForm" role="form" class="form-horizontal">
+                        <div layout="column" layout-gt-xs="row" >
+                            <md-card>
+                                <md-card-title>
+                                    <md-card-title-text>
+
+                                        <span class="md-headline">Datos básicos</span>
+                                        <span class="md-subhead">Zona, vigencias</span>
+                                    </md-card-title-text>
+                                </md-card-title>
+
+                                <md-card-content>
+                                    <div layout="column" layout-gt-xs="row" >
+                                        <md-input-container class="md-block" > <!--flex-gt-sm-->
+                                            <label>Sector</label>
+                                            <md-select ng-model="ctrl.zonas.model">
+                                                <md-option><em>None</em></md-option>
+                                                <md-option ng-repeat="sector in ctrl.zonas.availableOptions" ng-value="sector.id" >
+                                                    {{sector.name}}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                        <md-input-container class="md-block">
+                                            <label>Vigencia</label>
+                                            <md-select ng-model="ctrl.vigencias.model">
+                                                <md-option><em>None</em></md-option>
+                                                <md-option ng-repeat="vig in ctrl.vigencias.availableOptions" ng-value="vig.name" >
+                                                    {{vig.name}}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" >
+                                            <label>Fecha de Inicio</label>
+                                            <md-datepicker ng-model="ctrl.data.vig.inicio" md-max-date="ctrl.maxDate"></md-datepicker>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" >
+                                            <label>Fecha de Cierre</label>
+                                            <md-datepicker ng-model="ctrl.data.vig.final" md-max-date="ctrl.maxDate"></md-datepicker>
+                                        </md-input-container>
+
+
+
+                                        <!-- <h2>{{ctrl.data.year| date:'yyyy'}}-->
+                                        <div>
+                                            <md-input-container class="md-block" flex-gt-sm><!--class="md-icon-float md-block"-->
+                                                <label>Agua Suministrada</label>
+                                                <input required type="number" name="suministrada" ng-model="ctrl.data.as" ng-pattern="/^[0-9]*$/">
+                                                <div  ng-messages="myForm.suministrada.$error" role="alert" multiple>
+                                                    <div ng-message="required">Este campo es requerido</div>
+                                                    <!--<div ng-message="uid">The user ID must 9 digit number.And the remainder of sum of first 8 digits should equal to the 9th digit.</div>-->
+                                                </div>
+                                            </md-input-container>
+                                        </div>
+                                    </div>
+                                    <div layout-gt-xs="row" >
+                                        <div layout="column" layout-gt-xs="row" >
+                                            <md-card-title-text>
+                                                <span class="md-headline">Agua Facturada</span>
+                                            </md-card-title-text>
+                                        </div> 
+                                    </div>
+                                    <div layout-gt-xs="row" >
+                                        <div layout="column" layout-gt-xs="row" >
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Medido<br/>(Normal - Especial)</span>
+                                            </md-card-title-text>
+                                        </div>
+                                        <div layout-gt-sm="row">
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Cuentas</label>
+                                                <input  type="number" name="fm_cuentas" ng-model="ctrl.data.fm.c" required ng-pattern="/^[0-9]*$/">
+                                                <div ng-messages="myForm.fm_cuentas.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                            </md-input-container>
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Volumen (m^3)</label>
+                                                <input type="number" name="fm_volumen" ng-model="ctrl.data.fm.v" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.fm_volumen.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout="column" layout-gt-xs="row" >
+                                            <md-card-title-text>
+                                                <span class="md-subhead">No Medido<br/>(Ciclo i)</span>
+                                            </md-card-title-text>
+                                        </div>
+                                        <div layout-gt-sm="row">
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Cuentas</label>
+                                                <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.fnm.c" required ng-pattern="/^[0-9]*$/"/>
+                                                <div ng-messages="myForm.fnm_cuentas.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                            </md-input-container>
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Volumen (m^3)</label>
+                                                <input type="number" name="fnm_volumen" ng-model="ctrl.data.fnm.v" required ng-pattern="/^[0-9]*$/"/> 
+                                                <div ng-messages="myForm.fnm_volumen.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                            </md-input-container>
+                                        </div>
+                                    </div>
+
+                                    <div layout-gt-xs="row" >
+                                        <div layout="column" layout-gt-xs="row" >
+                                            <md-card-title-text>
+                                                <span class="md-headline">Agua No Facturada Autorizada</span>
+                                            </md-card-title-text>
+                                        </div> 
+                                    </div>
+                                    <md-card-title-text>
+                                        <span class="md-subhead">Medido</span>
+                                    </md-card-title-text>
+
+
+                                    <div layout-gt-sm="row">
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.nfa.m.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.nfa.m.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>   
+
+
+                                    <md-card-title-text>
+                                        <span class="md-subhead">No Medido</span>
+                                    </md-card-title-text>
+
+
+                                    <div layout-gt-sm="row">
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Bomberos e hidrantes</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.nfa.nm.bh.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.nfa.nm.bh.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Carrotanques</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.nfa.nm.ct.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.nfa.nm.ct.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Lavado tanques</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.nfa.nm.lt.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.nfa.nm.lt.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>                                   
+
+                                    </div>
+
+                                    <!--Consumos no autorizados-->
+                                    <div layout-gt-xs="row" >
+                                        <div layout="column" layout-gt-xs="row" >
+                                            <md-card-title-text>
+                                                <span class="md-headline">Consumos no autorizados</span>
+                                            </md-card-title-text>
+                                        </div> 
+                                    </div>
+                                    <div layout-gt-sm="row">
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Potenciales totalizadoras</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.cna.pt.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.cna.pt.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Diferencias SAPvs Spool</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.cna.dss.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.cna.dss.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+
+                                    <div layout-gt-sm="row">
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Procesos defraudación</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.cna.pd.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.cna.pd.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Cortadas presentan lectura</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.cna.cpl.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.cna.cpl.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>  
+
+                                    <!-- Inexactitud de la medición-->
+
+                                    <div layout-gt-xs="row" >
+                                        <div layout="column" layout-gt-xs="row" >
+                                            <md-card-title-text>
+                                                <span class="md-headline">Inexactitud de la medición</span>
+                                            </md-card-title-text>
+                                        </div> 
+                                    </div>
+
+
+                                    <div layout-gt-sm="row">
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Errores de lectura</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.im.el.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.im.el.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Anomalías Crítica</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.im.ac.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.im.ac.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Sin consumo</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.im.sc.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.im.sc.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout-gt-sm="row">
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Predios facturados x promedio</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.im.pfxp.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.im.pfxp.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Consumo Sistemático</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.im.cs.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.im.cs.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-card-title-text>
+                                                <span class="md-subhead">Predios Obsolecencia</span>
+                                            </md-card-title-text>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+
+                                            <label>Cuentas</label>
+                                            <input  type="number" name="fnm_cuentas" ng-model="ctrl.data.im.po.c" required ng-pattern="/^[0-9]*$/">
+                                            <div ng-messages="userForm.fnm_cuentas.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <label>Volumen (m^3)</label>
+                                            <input type="number" name="fnm_volumen" ng-model="ctrl.data.im.po.v" required ng-pattern="/^[0-9]*$/"> 
+                                            <div ng-messages="userForm.fnm_volumen.$error" role="alert" multiple>
+                                                <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+
+
+                                    <div layout-gt-xs="row" >
+                                        <div layout="column" layout-gt-xs="row" >
+                                            <md-card-title-text>
+                                                <span class="md-headline">Perdidas reales físicas</span>
+                                            </md-card-title-text>
+                                        </div> 
+                                    </div>
+
+
+                                    <div layout-gt-xs="row" >
+                                        <div layout-gt-sm="row">
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Reparación Acometidas</label>
+                                                <input  type="number" name="prf_ra" ng-model="ctrl.data.prf.ra" required ng-pattern="/^[0-9]*$/">
+                                                <div ng-messages="myForm.prf_ra.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Reparación Acometidas.</md-tooltip>
+                                            </md-input-container>
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Reparación redes < 3"</label>
+                                                <input type="number" name="prf_rmn3" ng-model="ctrl.data.prf.rmn3" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.prf_rmn3.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Reparación redes < 3".</md-tooltip>
+                                            </md-input-container>
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Reparación redes > 3"</label>
+                                                <input type="number" name="prf_rmy3" ng-model="ctrl.data.prf.rmy3" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.prf_rmy3.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Reparación redes > 3".</md-tooltip>
+                                            </md-input-container>
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Suministro x carrotanque</label>
+                                                <input type="number" name="prf_sxc" ng-model="ctrl.data.prf.sxc" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.prf_sxc.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Suministro x carrotanque.</md-tooltip>
+                                            </md-input-container>
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Operación de pilas</label>
+                                                <input type="number" name="prf_op" ng-model="ctrl.data.prf.op" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.prf_op.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Operación de pilas.</md-tooltip>
+                                            </md-input-container>  
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Operación de hidrantes</label>
+                                                <input type="number" name="prf_oh" ng-model="ctrl.data.prf.oh" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.prf_oh.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Operación de hidrantes.</md-tooltip>
+                                            </md-input-container> 
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Lavado de redes</label>
+                                                <input type="number" name="prf_lr" ng-model="ctrl.data.prf.lr" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.prf_lr.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Lavado de redes.</md-tooltip>
+                                            </md-input-container>  
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Mantenimiento alcantarillado</label>
+                                                <input type="number" name="prf_ma" ng-model="ctrl.data.prf.ma" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.prf_ma.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Mantenimiento alcantarillado</md-tooltip>
+                                            </md-input-container>  
+
+                                            <md-input-container class="md-block" flex-gt-sm>
+                                                <label>Fugas no visibles</label>
+                                                <input type="number" name="prf_fnv" ng-model="ctrl.data.prf.fnv" required ng-pattern="/^[0-9]*$/"> 
+                                                <div ng-messages="myForm.prf_fnv.$error" role="alert" multiple>
+                                                    <div ng-message="required" class="my-message">Este campo es obligatorio.</div>
+                                                    <div ng-message="pattern" class="my-message">El valor ingresado no es valido.</div>
+                                                </div>
+                                                <md-tooltip md-direction="left">Fugas no visibles</md-tooltip>
+                                            </md-input-container>   
+                                        </div>
+                                    </div>
+
+
+                                </md-card-content>
+
+
+
+
+                            </md-card>
+                        </div>
+
+                    </form>
+                    <div layout-gt-sm="row">
+                        <md-button type="submit" ng-disabled="myForm.$invalid" ng-click="ctrl.submit()">Registrar</md-button>
+                        <md-button type="button" ng-click="ctrl.reset()" class="btn btn-warning btn-sm" ng-disabled="myForm.$pristine">Limpiar</md-button>
+                    </div> 
+
+            </md-content> 
+
+
+
+
+
+
+
+
+        </div> 
+        <!--<md-content layout-padding>
+            <form name="regForm" role="form">
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>State</label>
+                    <md-select ng-model="user.state">
+                        <md-option ng-repeat="state in states" value="{{state.abbrev}}">
+                            {{state.abbrev}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+
+                <md-input-container>
+                    <label>Cuentas</label>
+                    <input>
+                </md-input-container>
+                <md-input-container>
+                    <label>Volumen (m^3)</label>
+                    <input>
+                </md-input-container>
+
+                <md-input-container class="md-icon-float md-block">
+                    <label>User Name: </label>
+                    <input required md-maxlength="35" type="text" name="username" ng-model="user.name">
+                    <div ng-messages="regForm.username.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="md-maxlength">The user name must be less than 35 characters long.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block">
+                    <label>Email</label>
+                    <input required type="email" name="useremail" ng-model="user.email"
+                           minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+
+                    <div ng-messages="regForm.useremail.$error" role="alert">
+                        <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+                            Your email must be between 10 and 100 characters long and look like an e-mail address.
+                        </div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-icon-float md-block">
+                    <label>Password: </label>
+                    <input required minlength="8" my-password type="password" name="password" ng-model="user.password">
+                    <div ng-messages="regForm.password.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="minlength">The password must be more than 8 characters long.</div>
+                        <div ng-message="pass">The password must contain at least one letter and one digit.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-icon-float md-block">
+                    <label>Verify Password: </label>
+                    <input required type="password" name="verifyPassword" ng-model="user.verifyPassword"
+                           compare-to="user.password"/>
+                    <div ng-messages="regForm.verifyPassword.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="compareTo">Must match the previous entry</div>
+                    </div>
+                </md-input-container>
+
+                <md-button type="submit" ng-disabled="regForm.$invalid">Submit</md-button>
+
+            </form>
+        </md-content>-->
+
+
+    </div>
+
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.js"></script>
+
+
+    <script src="js/app.js"></script>
+    <script src="js/service/reg_service.js"></script>
+    <script src="js/controller/reg_controller.js"></script>
+    <!--
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+    -->
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body{
+                height: 100%;
+            }
+            html{
+                height: 100%;
+            }
+            @media (min-width: 768px) {
+                .grid-container {
+                    display: grid;
+                    grid-template-columns:repeat(12, 1fr);
+                    grid-template-rows:repeat(9, auto);/*20px 30px 60px 70px 50px 50px 50px 20px 20%;*/
+                    background-color: #99ccff;
+                    grid-gap:4px;
+                    padding: 4px;
+                    text-align: center;
+                }
+
+                .grid-container > div {
+                    background-color: rgba(255, 255, 255, 0.8);
+                    text-align: center;
+
+                    font-size: 10px;
+                }
+                .item1 {
+                    grid-column: 1 / 13;
+                }
+                .itemA {
+                    grid-row: 3 / 9;
+                }
+                .itemB {
+                    grid-column: 2 / 4;
+                    grid-row: 3 / 5;
+                }
+                .itemC {
+                    grid-column: 2 / 3;
+                    grid-row: 5 / 8;
+                }
+                .itemH {
+                    grid-column: 3 / 10;
+                    grid-row: 7 / 8;
+                    display: grid;
+                    grid-template-columns:repeat(9, 1fr);
+                    grid-template-rows:repeat(3,auto);
+                    background-color: #bee9be !important;
+
+                }
+                div > p {
+                    margin: 1px;
+
+                }
+                .itemD {
+                    grid-column: 2 / 12;
+                    grid-row: 8 / 9;
+                }
+                .itemF {
+                    grid-column: 4 / 5;
+                    grid-row: 4 / 5;
+                }
+                .itemNFacM {
+                    grid-column: 5 / 8;
+                    grid-row: 4 / 5;
+                }                 
+                .itemG {
+                    grid-column: 3 / 8;
+                    grid-row: 5 / 7;
+                }                
+                .itemK{
+                    grid-column: 8/ 9;
+                    grid-row: 4 / 7;
+                }                 
+                .itemL{
+                    grid-column: 9/ 10;
+                    grid-row: 3 / 7;
+                }                
+                .itemM{
+                    grid-column: 10 / 11;
+                    grid-row: 3 / 8;
+                }                
+                .itemN{
+                    grid-column: 11 / 12;
+                    grid-row: 3 / 8;
+                }                
+                .itemBalc {
+                    grid-column: 12 / 13;
+                    grid-row: 3 / 9;
+                }
+                .itemFacM{
+                    grid-column: 4 / 6;
+                    grid-row: 3 / 4;
+                    display: grid;
+
+                    grid-template-rows:repeat(4,auto);
+                }
+                .itemE{
+                    grid-column: 6 / 9;
+                    grid-row: 3 / 4;
+                }
+                .itemGraf{
+                    grid-column: 1 / 13;
+                    grid-row: 9 / 10;
+                    padding: 1px 20px 1px 20px;
+                    background-color: whitesmoke !important;
+                }                
+            }
+            .chart{
+                height: 250px; 
+                max-height: 300px; 
+                position: relative;
+
+            }
+
+            .label1 {
+                background-color: #f6f6f6;
+                color: #9696ff;
+                margin-left: 4px;
+                margin-right: 4px;
+                border: 2px;
+                border-style: ridge;
+            }
+            .label2 {
+                background-color: #f6f6f6;
+                color: #9696ff;
+                margin-left: 4px;
+                margin-right: 4px;
+                border: 2px;
+                border-style: ridge;/*height: -webkit-fill-available;*/
+            }
+            .label3 {
+                border-style: solid;
+                border-width: thin;
+                background-color: #21e221;
+            }
+            .lab_titles{
+                background-color: #777;
+                color: #ededed;
+                margin-left: 4px;
+                margin-right: 4px;
+                border: 2px;
+                border-style: hidden;
+            }
+            b{
+                background-color: #e0e0e0;
+                color: #4c4c4c;
+                margin-left: 4px;
+                margin-right: 4px;
+                border: 2px;
+                border-style: groove;
+            }
+            .indices{
+                color: red;
+            }
+
+        </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/primeui@4.1.15/primeui.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.7/c3.min.css" /> 
+        <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+        <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.7/c3.min.js"></script>
+        <script type='text/javascript' src="js/balanceEAB.js"></script>
+        <script type='text/javascript'>
+            var dt = [];
+            window.onload = function () {
+
+                getData();
+
+            };
+
+        </script>
+
+    </head>
+    <body>
+        <div class="grid-container">
+            <div class="item1">
+                <div style="display: flex;">
+                    <select id="selZona" class="label2"  onchange="changeZone()">
+                        <option value="1">Zona 1</option>
+                        <option value="2">Zona 2</option>
+                        <option value="3">Zona 3</option>
+                        <option value="4">Zona 4</option>
+                        <option value="5">Zona 5</option>
+                        <option value="6">EAAB</option>
+                    </select>
+                    <select id="selVigencia" class="label2"   onchange="getData()">
+                        <option value="10">Vigencia 10</option>
+                        <option value="20">Vigencia 20</option>
+                        <option value="30">Vigencia 30</option>
+                        <option value="40">Vigencia 40</option>
+                    </select>
+                    <select id="selYear" class="label2"   onchange="getData()">
+                        <option value="2017">2017</option>
+                        <option value="2018">2018</option>
+                    </select>
+                    <p class="label1" id='id_IPUF'></p>
+                    <p>fecha inicio - final</p>
+                    <p></p>
+                </div>
+            </div>
+            <div class="item1">MEDIDORES EVALUADOS PARA LA RECUPERACIÓN ASÍ:</div>
+            <div class="itemA">
+                <p class="lab_titles">Sistema Integrado de Pérdidas de Agua Suministrada</p>
+                <b>A=B+C+D</b>
+                <p>Sipas - catastro de usuarios</p>
+                <p>TOTAL DE AGUA SUMINISTRADA</p>
+                <p id='id_AS'></p>
+            </div>
+            <div class="itemB">
+                <b>B=E+F</b>
+                <p>CONSUMO AUTORIZADO (CA)</p>
+                <p id='id_CA'></p>
+                <p id='id_CA_p'></p>
+            </div>  
+            <div class="itemC">
+                <b>C=G+H</b>
+                <p>PERDIDAS DE AGUA APARENTES + REALES</p>
+                <p>Cuentas</p>
+                <p id="id_PARc"></p>
+                <p id="id_PARv"></p>
+                <p id="id_PARp"></p>
+            </div>
+            <div class="itemD" style="display: flex;justify-content: center">
+                <b style="margin-right: 30px">D. m3 POR EXPLICAR</b>
+                <p id="vXE" style="margin-right: 30px">></p>
+                <p id="pXE"></p>
+            </div>
+            <div class="itemH">
+                <p style="grid-column: 1/ 5;">H. TOTAL PERDIDAS REALES FÍSICAS</p>
+                <p id="id_TPRF"></p>
+                <p id="id_TPRF_AS"></p>
+                <p style="grid-column: 7/ 10;"/>
+                <p class="label3">Reparación Acometidas</p>
+                <p class="label3" >Reparación redes &lt;3"</p>
+                <p class="label3" >Reparación redes >=3"</p>
+                <p class="label3" >Suministro x carrotanque</p>
+                <p class="label3">Operación de pilas</p>
+                <p class="label3">Operación de hidrantes</p>
+                <p class="label3">Lavado de redes</p>
+                <p class="label3">Mantenimiento alcantarillado</p>
+                <p class="label3">Fugas no visibles</p>
+                <p id="repAcom"/><p id="repL3p"/><p id="repM3p"/><p id="sumiCar"/><p id="oPilas"/>
+                <p id="oHid"/><p id="lavR"/><p id="manAlc"/><p id="fugNV"/>
+            </div>
+            <div class="itemG">G</div>
+            <div class="itemF">
+                <p>F. NO FACTURADO AUTORIZADO</p>
+                <p id="cANF"></p>
+                <p id="vANF"></p>
+                <p id="pANF"></p>
+            </div>  
+            <div class="itemE">E</div>
+            <div class="itemFacM">
+                <p >FACTURADO MEDIDO (Normal-Especial)</p>
+                <div style="display: flex">
+                    <p class="label1">Cuentas:</p><p id="cFM"/><p class="label1">Volumen:</p><p id="vFM"/>
+                </div>
+                <p >FACTURADO NO MEDIDO (Ciclo i)</p>
+                <div style="display: flex">
+                    <p class="label1">Cuentas:</p><p id="cNFM"/><p class="label1">Volumen:</p><p id="vNFM"/>
+                </div>
+            </div>
+            <div class="itemNFacM">No Facturado medido</div>
+            <div class="itemK">
+                <b>K=F+G</b>
+                <p>AGUA NO FACTURADA COMERCIAL</p>
+                <p id="cNFC"></p>
+                <p id="vNFC"></p>
+                <p id="pNFC"></p>
+            </div>
+            <div class="itemL">
+                <b>L=E+K</b>
+                <p>VOLUMEN DE SALIDA COMERCIAL</p>
+                <p id="vVSC"></p>
+                <p id="pVSC"></p>
+            </div>
+            <div class="itemM">
+                <p>= AGUA FACTURADA</p>
+                <p id="pAF"></p>
+                <b>M=K+H</b>
+                <p class="lab_titles">TOTAL AGUA NO FACTURADA</p>
+                <p id="cTANF"></p>
+                <p id="vTANF"></p>
+                <p id="pTANF"></p>
+            </div>
+            <div class="itemN">
+                <b>N=M+D</b>
+                <p>TOTAL VOLUMEN DE SALIDA</p>
+                <p id="cTVS"></p>
+                <p id="vTVS"></p>
+                <p id="pTVS"></p>
+            </div>
+            <div class="itemBalc">
+                <p class="lab_titles">BALANCE HÍDRICO</p>
+                <b>E+K+H+D</b>
+                <p>AGUA FACTURADA</p>
+                <p id="vBalAF"></p>
+                <p id="pBalAF"></p>
+                <b>+</b>
+                <p>AGUA FACTURADA COMERCIAL</p>
+                <p id="vBalANFC"></p>
+                <p id="pBalANFC"></p>
+                <b>+</b>
+                <p>TOTAL PERDIDAS RELES FÍSICAS</p>
+                <p id="vBalPRF"></p>
+                <p id="pBalPRF"></p>
+                <b>+</b>                
+                <p>m3 POR EXPLICAR</p>
+                <p id="vBalXE"></p>
+                <p id="pBalXE"></p>
+                <b>=</b>
+                <p></p>
+                <p id="vBalAS"></p>
+                <p id="pBalAS"></p>
+            </div>
+            <div class="itemGraf">
+                <div class="ui-grid ui-grid-responsive" >
+                    <div><b class="indices">INAF</b>=(AS-AF)/AS*100% = <b id="id_INAF"></b></div>
+                    <div class="ui-grid-row">
+                        <div id='chBH' class="ui-g-4 chart" ></div>
+
+                        <div id='chDANF' class="ui-g-4 chart" ></div>
+                        <div id='chPromFact' class="ui-g-4 chart" ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
